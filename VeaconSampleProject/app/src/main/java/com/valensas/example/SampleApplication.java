@@ -25,7 +25,7 @@ public class SampleApplication extends Application{
         // initialize VeaconHandler with your Secret Key, application's context and the class which
         // will be opened after a user clicks on a notification and dismisses the shown message.
         handler.initialize(
-                "65b30ec6-974a-4599-ad77-b86eee03c4a4",
+                "XXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX",
                 getApplicationContext(),
                 MainActivity.class);
         // The icon which will be displayed in the notification bar when a notification is received
