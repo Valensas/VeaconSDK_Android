@@ -1,0 +1,9 @@
+<component name="libraryTable">
+  <library name="VeaconSDK">
+    <CLASSES>
+      <root url="jar://$PROJECT_DIR$/build/exploded-aar/VeaconSampleProject.app.libs/sdk/unspecified/libs/VeaconSDK.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+  </library>
+</component>
