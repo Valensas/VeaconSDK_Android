@@ -18,8 +18,7 @@ public class Application extends android.app.Application {
         super.onCreate();
 
         handler = VeaconSDK.getVeaconHandler();
-        String gelecek = "XXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX";
-        handler.initialize("4f6797ba-3536-4f3f-a372-c403a93c2ebf", getApplicationContext(), MainActivity.class);
+        handler.initialize("XXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX", getApplicationContext(), MainActivity.class);
         handler.setNotificationIcon(R.drawable.ic_launcher);
         handler.setLoggingMode(true);
         registerActivityLifecycleCallbacks(handler);
