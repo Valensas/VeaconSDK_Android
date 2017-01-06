@@ -4,50 +4,40 @@ Veacon is a low-powered, low-cost iBeacon transmitter that can notify nearby dev
 
 Current Version
 ----
-0.1
+1.2
 
 Installation
 -----------
-Veacon SDK is provided as an Android Library project with all necessary dependencies and configurations. You can start using it by simply importing our library project to your own project with Android Studio. In order to import the SDK, first copy the sdk folder into your own project's libs folder. After that, update your settings.gradle file as following: 
+Veacon SDK is provided as an Android Library project with all necessary dependencies and configurations. You can start using it by simply downloading [AAR file](https://github.com/Valensas/VeaconSDK_Android/tree/master/VeaconSampleProject/veacon-sdk). If your working IDE is Android Studio, you can Open Module Settings, Add New Module as JAR/AAR file and select the downloaded file. Finally, you should add the following line to your app level gradle file as a dependency:
 
 ```c
-include ':app'
-include ':app:libs:sdk'
+compile project(':veacon-sdk')
 ```
-
-After this process, update your app's build.gradle file as following:
+In our SDK, we use Gson to handle Json convertion tasks. If you already use Gson in your project, you don't need to do anything, but if you don't use, you need to add one of the versions of Gson in your app level gradle file as a dependency:
 
 ```c
-apply plugin: 'android'
+compile 'com.google.code.gson:gson:2.5'
+```    
 
-android {
-    compileSdkVersion 19
-    buildToolsVersion "19.0.0"
+After this process, add tools:replace="android:name" in your AndroidManifest as following example:
 
-    defaultConfig {
-        packageName "com.valensas.example"
-        minSdkVersion 18
-        targetSdkVersion 19
-        versionCode 1
-        versionName "1.0"
-    }
-    buildTypes {
-        release {
-            runProguard false
-            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
-        }
-    }
-}
+```c
+<application tools:replace="android:name"
+        android:name=".Application"
+        android:icon="@drawable/ic_launcher"
+        android:label="@string/app_name"
+        android:theme="@style/AppTheme" >
 
-dependencies {
-    compile fileTree(dir: 'libs', include: ['*.jar'])
-    compile project('libs:sdk')
-}
-```
+        <activity
+            ...
+
+    </application>
+```  
+
 
 Requirements
 -------
-VeaconSDK requires devices that have Bluetooth 4.0 LE support and Android 4.3 or above. Other devices that below this specification are not supported by VeaconSDK.
+VeaconSDK requires devices that have Bluetooth 4.0 LE support and Android 4.3 (API level 18) or above. Other devices that below this specification are not supported by VeaconSDK.
 
 In order to use VeaconSDK, you must have an account on [Veacon Portal]. After you create your account, you can get your secret key from portal.
 
@@ -84,15 +74,15 @@ public class SampleApplication extends Application{
         // initialize VeaconHandler with your Secret Key, application's context and the class which
         // will be opened after a user clicks on a notification and dismisses the shown message.
         handler.initialize(
-                "XXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX", 
-                getApplicationContext(), 
+                "XXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX",
+                getApplicationContext(),
                 MainActivity.class);
         // The icon which will be displayed in the notification bar when a notification is received
         // as a result of a veacon
         handler.setNotificationIcon(R.drawable.ic_launcher);
         // To see additional logs for Veacons, enable LoggingMode.
         handler.setLoggingMode(false);
-        // This is necessary for the Veacon service to become enabled when the user restarts 
+        // This is necessary for the Veacon service to become enabled when the user restarts
         // his/her phone
         registerActivityLifecycleCallbacks(handler);
     }
@@ -171,13 +161,46 @@ In order to detect Veacons around your application, you need to start Veacon mon
         @Override
         public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
             if(b){
-                handler.startVeaconMonitoring();
+                startMonitoring();
             }else{
-                handler.stopVeaconMonitoring();
+                stopMonitoring();
             }
         }
     });
 ```
+```c
+/*
+    For Android SDK >= 24, on some devices GPS is required to find the Beacon device. Unfortunately, Android's
+    Bluetooth Adapter cannot return an error about that. So it is highly recommended that, you should warn the user to open
+    his/her GPS or you can do it for him/her using Google's location API.
+    Detail: http://stackoverflow.com/questions/29801368/how-to-show-enable-location-dialog-like-google-maps
+ */
+private void startMonitoring() {
+    int result = Application.handler.startVeaconMonitoring();
+    switch (result) {
+        case VeaconSDK.MONITORING_STARTED_SUCCESSFULLY:
+            break;
+        case VeaconSDK.MONITORING_ALREADY_ACTIVE:
+            break;
+        case VeaconSDK.BLUETOOTH_CLOSED:
+            // You can show an Alert Dialog to push user opening his/her bluetooth or
+            // you can open it programmatically. BluetoothAdapter.getDefaultAdapter().enable()
+            break;
+        case VeaconSDK.BLUETOOTH_NOT_SUPPORTED:
+            // You can disable all of your features based on Veacon SDK.
+            break;
+        default:
+            break;
+    }
+}
+
+private void stopMonitoring() {
+    if (Application.handler.isMonitoringActive()) {
+        Application.handler.stopVeaconMonitoring();
+    }
+}
+```
+
 Sample Project
 ----
 You can find the sample project that is used to create this documentation under VeaconSampleProject folder in this repository.
