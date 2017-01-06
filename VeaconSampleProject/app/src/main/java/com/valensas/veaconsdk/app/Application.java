@@ -18,7 +18,7 @@ public class Application extends android.app.Application {
         super.onCreate();
 
         handler = VeaconSDK.getVeaconHandler();
-        handler.initialize("XXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX", getApplicationContext(), MainActivity.class);
+        handler.initialize("11111111-1111-1111-1111-111111111111", getApplicationContext(), MainActivity.class);
         handler.setNotificationIcon(R.drawable.ic_launcher);
         handler.setLoggingMode(true);
         registerActivityLifecycleCallbacks(handler);

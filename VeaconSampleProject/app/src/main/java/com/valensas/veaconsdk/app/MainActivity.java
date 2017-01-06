@@ -11,6 +11,7 @@ import android.widget.CompoundButton;
 import android.widget.Switch;
 import android.widget.Toast;
 
+import com.veacon.sdk.VeaconSDK;
 import com.veacon.sdk.listener.CustomActionListener;
 import com.veacon.sdk.listener.VeaconStatusListener;
 
@@ -89,9 +90,28 @@ public class MainActivity extends Activity implements CustomActionListener, Veac
         }
     }
 
+    /*
+        For Android SDK >= 24, on some devices GPS is required to find the Beacon device. Unfortunately, Android's
+        Bluetooth Adapter cannot return an error about that. So it is highly recommended that, you should warn the user to open
+        his/her GPS or you can do it for him/her using Google's location API.
+        Detail: http://stackoverflow.com/questions/29801368/how-to-show-enable-location-dialog-like-google-maps
+     */
     private void startMonitoring() {
-        if (!Application.handler.isMonitoringActive()) {
-            Application.handler.startVeaconMonitoring();
+        int result = Application.handler.startVeaconMonitoring();
+        switch (result) {
+            case VeaconSDK.MONITORING_STARTED_SUCCESSFULLY:
+                break;
+            case VeaconSDK.MONITORING_ALREADY_ACTIVE:
+                break;
+            case VeaconSDK.BLUETOOTH_CLOSED:
+                // You can show an Alert Dialog to push user opening his/her bluetooth or
+                // you can open it programmatically. BluetoothAdapter.getDefaultAdapter().enable()
+                break;
+            case VeaconSDK.BLUETOOTH_NOT_SUPPORTED:
+                // You can disable all of your features based on Veacon SDK.
+                break;
+            default:
+                break;
         }
     }
 
