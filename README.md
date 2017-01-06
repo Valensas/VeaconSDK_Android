@@ -4,7 +4,7 @@ Veacon is a low-powered, low-cost iBeacon transmitter that can notify nearby dev
 
 Current Version
 ----
-1.1
+1.2
 
 Installation
 -----------
@@ -161,13 +161,46 @@ In order to detect Veacons around your application, you need to start Veacon mon
         @Override
         public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
             if(b){
-                handler.startVeaconMonitoring();
+                startMonitoring();
             }else{
-                handler.stopVeaconMonitoring();
+                stopMonitoring();
             }
         }
     });
 ```
+```c
+/*
+    For Android SDK >= 24, on some devices GPS is required to find the Beacon device. Unfortunately, Android's
+    Bluetooth Adapter cannot return an error about that. So it is highly recommended that, you should warn the user to open
+    his/her GPS or you can do it for him/her using Google's location API.
+    Detail: http://stackoverflow.com/questions/29801368/how-to-show-enable-location-dialog-like-google-maps
+ */
+private void startMonitoring() {
+    int result = Application.handler.startVeaconMonitoring();
+    switch (result) {
+        case VeaconSDK.MONITORING_STARTED_SUCCESSFULLY:
+            break;
+        case VeaconSDK.MONITORING_ALREADY_ACTIVE:
+            break;
+        case VeaconSDK.BLUETOOTH_CLOSED:
+            // You can show an Alert Dialog to push user opening his/her bluetooth or
+            // you can open it programmatically. BluetoothAdapter.getDefaultAdapter().enable()
+            break;
+        case VeaconSDK.BLUETOOTH_NOT_SUPPORTED:
+            // You can disable all of your features based on Veacon SDK.
+            break;
+        default:
+            break;
+    }
+}
+
+private void stopMonitoring() {
+    if (Application.handler.isMonitoringActive()) {
+        Application.handler.stopVeaconMonitoring();
+    }
+}
+```
+
 Sample Project
 ----
 You can find the sample project that is used to create this documentation under VeaconSampleProject folder in this repository.
